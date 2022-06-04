@@ -63,16 +63,6 @@ namespace Wub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap _438_lab_bottle_round_outline {
-            get {
-                object obj = ResourceManager.GetObject("438-lab-bottle-round-outline", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap close {
             get {
                 object obj = ResourceManager.GetObject("close", resourceCulture);
@@ -83,9 +73,9 @@ namespace Wub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap WUB {
+        internal static System.Drawing.Bitmap Close_24px {
             get {
-                object obj = ResourceManager.GetObject("WUB", resourceCulture);
+                object obj = ResourceManager.GetObject("Close_24px", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -93,9 +83,19 @@ namespace Wub.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap WUB1 {
+        internal static System.Drawing.Bitmap Closepx {
             get {
-                object obj = ResourceManager.GetObject("WUB1", resourceCulture);
+                object obj = ResourceManager.GetObject("Closepx", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap windows_11 {
+            get {
+                object obj = ResourceManager.GetObject("windows-11", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

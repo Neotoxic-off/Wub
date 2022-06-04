@@ -20,6 +20,6 @@ namespace Wub.Manager
             int nHeightEllipse // height of ellipse
         );
 
-        public static string version = "1.0.0";
+        public static string version = "1.1.0";
     }
 }

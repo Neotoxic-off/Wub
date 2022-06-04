@@ -15,10 +15,26 @@ namespace Wub
     {
         private BackgroundWorker worker = new BackgroundWorker();
         private List<string> required = null;
-        private Dictionary<string, object> injections = null;
-        private Dictionary<string, object> configuration = null;
-        private Popup.Ok done = new Popup.Ok(Settings.done);
         private Logger.logger logger = new Logger.logger();
+        private List<Module> modules = null;
+        private Popup.Ok done = new Popup.Ok("Done", Settings.done);
+        private Popup.Ok ok = new Popup.Ok("About", Settings.about);
+
+        class Module
+        {
+            public string key { get; set; }
+            public object value { get; set; }
+            public string id { get; set; }
+            public Bunifu.UI.WinForms.BunifuToggleSwitch2 button { get; set; }
+
+            public Module(string ikey, object ivalue, string iid, Bunifu.UI.WinForms.BunifuToggleSwitch2 ibutton)
+            {
+                key = ikey;
+                value = ivalue;
+                id = iid;
+                button = ibutton;
+            }
+        }
 
         public Wub()
         {
@@ -30,32 +46,33 @@ namespace Wub
         {
             Region = Region.FromHrgn(Manager.Ui.CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
             worker.DoWork += new DoWorkEventHandler(bypass);
-            label_version.Text = Manager.Ui.version;
+            modules = new List<Module>()
+            {
+                new Module("BypassTPMCheck", 0x00000001, "TPM bypass", button_tpm),
+                new Module("BypassRAMCheck", 0x00000001, "RAM bypass", button_ram),
+                new Module("BypassSecureBootCheck", 0x00000001, "Secure Boot bypass", button_secure_boot)
+            };
             required = new List<string>()
             {
                 "SYSTEM",
                 "SYSTEM\\Setup",
                 "SYSTEM\\Setup\\LabConfig"
             };
-            injections = new Dictionary<string, object>()
-            {
-                { "BypassTPMCheck", 1 },
-                { "BypassSecureBootCheck", 1 },
-                { "BypassRAMCheck", 1 }
-            };
-            configuration = new Dictionary<string, object>()
-            {
-                { "BypassTPMCheck", bypass_tmp.Checked },
-                { "BypassRAMCheck", bypass_ram.Checked },
-                { "BypassSecureBootCheck", bypass_sb.Checked }
-            };
         }
 
-        private void update_configuration()
+        private List<Module> get_configurations()
         {
-            configuration["BypassTPMCheck"] = bypass_tmp.Checked;
-            configuration["BypassRAMCheck"] = bypass_ram.Checked;
-            configuration["BypassSecureBootCheck"] = bypass_sb.Checked;
+            List<Module> content = new List<Module>();
+
+            foreach (Module module in modules)
+            {
+                if (module.button.Checked == true)
+                {
+                    content.Add(module);
+                }
+            }
+
+            return (content);
         }
 
         private void bypass(object sender, EventArgs e)
@@ -64,7 +81,6 @@ namespace Wub
             RegistryKey key = null;
 
             get_hardware();
-            update_configuration();
             check_requirements();
             key = Registry.LocalMachine.OpenSubKey(path, true);
             inject(key);
@@ -75,6 +91,7 @@ namespace Wub
         {
             int bits = (Environment.Is64BitOperatingSystem == true ? 64 : 32);
 
+            log($"WUB: {Manager.Ui.version}");
             log($"MachineName: {Environment.MachineName}");
             log($"Version: {bits} bits");
             log($"OS Version: {Environment.OSVersion}");
@@ -83,7 +100,6 @@ namespace Wub
 
         private void log(string message)
         {
-            Manager.Threads.set_textbox(status, message);
             logger.add($"[{DateTime.Now}] {message}");
         }
 
@@ -109,68 +125,56 @@ namespace Wub
 
         private void inject(RegistryKey key)
         {
+            List<Module> user_configuration = get_configurations();
             string[] presents = key.GetValueNames();
 
-            log($"injecting bypasses");
-            foreach (KeyValuePair<string, object> injection in injections)
+            log($"injecting modules");
+            foreach (Module module in user_configuration)
             {
-                if ((bool)configuration[injection.Key] == true)
+                log($"bypassing: {module.id}");
+                if (presents.Contains(module.key) == false)
                 {
-                    log($"bypassing: {injection.Key}");
-                    if (presents.Contains(injection.Key) == false)
+                    key.SetValue(module.key, module.value);
+                }
+                else
+                {
+                    if (key.GetValue(module.key) != module.value)
                     {
-                        key.SetValue(injection.Key, injection.Value);
+                        log($"updating registry value");
+                        key.SetValue(module.key, module.value);
                     }
                     else
                     {
-                        if (key.GetValue(injection.Key) != injection.Value)
-                        {
-                            if (Manager.Threads.get_switch_button(button_update) == true)
-                            {
-                                log($"updating registry value");
-                                key.SetValue(injection.Key, injection.Value);
-                            }
-                        }
-                        else
-                        {
-                            log($"bypass {injection.Key} present");
-                        }
+                        log($"module {module.id} present");
                     }
                 }
             }
 
-            log($"bypass injected");
+            log($"all modules injected");
             dump();
-        }
-
-        private void update_button(bool status)
-        {
-            button_bypass.Enabled = status;
-            button_exit.Enabled = status;
-            button_about.Enabled = status;
-            bypass_ram.Enabled = status;
-            bypass_tmp.Enabled = status;
-            bypass_sb.Enabled = status;
-            button_bypass.Enabled = status;
-        }
-
-        private void button_bypass_Click(object sender, EventArgs e)
-        {
-            update_button(false);
-            Manager.Threads.worker(worker);
-            done.ShowDialog();
-            update_button(true);
-        }
-
-        private void button_about_Click(object sender, EventArgs e)
-        {
-            Popup.Ok ok = new Popup.Ok(Settings.about);
-            ok.ShowDialog();
         }
 
         private void button_exit_Click_1(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void bunifuButton1_Click(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+            Manager.Threads.worker(worker);
+            done.ShowDialog();
+            Cursor = Cursors.Default;
+        }
+
+        private void bunifuButton2_Click(object sender, EventArgs e)
+        {
+            ok.ShowDialog();
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

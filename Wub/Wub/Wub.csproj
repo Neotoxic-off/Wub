@@ -179,6 +179,11 @@
     <Compile Include="Popup\Ok.Designer.cs">
       <DependentUpon>Ok.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Wub.cs">
       <SubType>Form</SubType>
@@ -203,14 +208,9 @@
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="Wub.resx">
       <DependentUpon>Wub.cs</DependentUpon>
     </EmbeddedResource>
@@ -230,24 +230,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\428-injection-outline.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\428-injection-outline %281%29.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\428-injection-outline %282%29.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\original.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\438-lab-bottle-round-outline.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="ncore.ico" />
-    <None Include="Resources\WUB1.png" />
-    <None Include="Resources\WUB.png" />
+    <None Include="Resources\Closepx.png" />
+    <None Include="Resources\Close_24px.png" />
+    <None Include="Resources\windows-11.png" />
     <None Include="Resources\close.png" />
   </ItemGroup>
   <ItemGroup>
